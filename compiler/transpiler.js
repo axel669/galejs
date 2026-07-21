@@ -52,6 +52,20 @@ const stringifyPart = (part) => {
                     `(${child.condition}) ? [${content}] : [${alt}]`
                 ]
             }
+            if (child.each !== undefined) {
+                const content =
+                    (child.content.length === 1)
+                    ? stringifyPart(child.content[0])
+                    : stringifyPart({
+                        tag: "$galeCore.Fragment",
+                        props: [],
+                        children: child.content,
+                    })
+                return [
+                    ...list,
+                    `(${child.each}).map((${child.expand}) => ${content})`
+                ]
+            }
             return [ ...list, stringifyPart(child) ]
         },
         []
@@ -63,11 +77,15 @@ const stringifyPart = (part) => {
                 return pair
             }
             const [prop, value] = pair
-            if (prop.startsWith("$$") === true && isHTMLElement === true) {
+            if (prop.startsWith("$$") === true && value.startsWith("#") === true) {
                 const key = prop.slice(2)
-                return `"${key}": ${value}.${key}, "onInput": ${value}.update`
+                const val = value.slice(1)
+                return `"${prop}": { value: ${val}, update: (e) => ${val} = $galeCore.getInputValue(e.target) }`
             }
-            return `"${pair[0]}": ${pair[1]}`
+            if (prop.startsWith("on:") === true) {
+                return `"${prop.replace(":", "")}": ${value}`
+            }
+            return `"${prop}": ${value}`
         }
     ).join(", ")
     const tag = (isHTMLElement === true) ? `"${part.tag}"` : part.tag
@@ -81,7 +99,13 @@ const stringify = (parts) =>
     .join("")
 const done = (parts) =>
     parts.find(part => typeof part !== "string") === undefined
-export const transpile = (source) => {
+export const transpile = (options) => {
+    const {
+        filename,
+        source,
+        sourceImport = "@axel669/galejs",
+    } = options
+
     let step = parser.parse(source)
     if (done(step) === true) {
         return source
@@ -92,7 +116,7 @@ export const transpile = (source) => {
         )
     }
     return prettier.format(
-        `import * as $galeCore from "@axel669/galejs"\n${step.join("")}`,
+        `import * as $galeCore from "${sourceImport}"\n${step.join("")}`,
         {
             printWidth: 70,
             experimentalOperatorPosition: "start",

@@ -4,12 +4,13 @@ File
     }
 
 Inter
-    = $([^"<'`\/#]+)
-    / Comment
+    = Comment
     / String
+    / Regex
     / Tag
     / Effect
     / Component
+    / $([^"<'`\/#]+)
     / "<"
     / "/"
     / "#"
@@ -30,6 +31,8 @@ String
     = $('"' ([^\\"] / "\\" .)* '"')
     / $("'" ([^\\'] / "\\" .)* "'")
     / $("`" ([^\\`] / "\\" .)* "`")
+Regex
+	= $("/" ("\\/" / [^\/\n\r])+ "/" [a-z]*)
 TagName = $([\$a-zA-Z0-9_\.\[\]"'`\(\),\-]+)
 Tag
     = "<#frag" props:Props _ ">" children:Children* "</>" {
@@ -42,7 +45,7 @@ Tag
     / "<" tag:TagName props:Props _ "/>" {
         return { tag, props, children: [] }
     }
-    / "<" tag:TagName props:Props _ ">" children:(Slot / If / Children)* close:TagClose {
+    / "<" tag:TagName props:Props _ ">" children:(Slot / If / Each / Children)* close:TagClose {
         return {
             tag,
             props,
@@ -67,7 +70,7 @@ Children
     / js:JSValue { return { js } }
     / "\\{"
 Slot
-    = "{#slot" __ slot:VarName propName:(":" VarName)? _ "}" content:Children* "{#/}" {
+    = "{#slot" __ slot:VarName propName:(":" VarName)? _ "}" content:(Children / If)* "{#/}" {
         return {
             slot,
             propName: propName?.[1] ?? null,
@@ -84,14 +87,22 @@ If
             alt: (els?.[1] ?? []).filter(item => item !== null),
         }
     }
+Each
+    = "{#each" __ each:$((!"->" .)+) _ "->" __ expand:JS _ "}" content:Children* "{#/}" {
+    	return {
+        	each: each.trim(),
+            expand: expand.trim(),
+            content: content.filter(item => item !== null),
+        }
+    }
 
 Props
     = items:(__ PropItem)* {
         return items.map(item => item[1])
     }
 PropItem
-    = "{" name:PropName "}" { return name }
-    / name:PropName "=" value:JSValue { return [name, value] }
+    = "{" name:PropName "}" { return [name, name] }
+    / name:PropName "=" "{" value:JS "}" { return [name, value] }
     / name:PropName "=" '"' str:PropString* '"' {
         return [name, `"${str.join("")}"`]
     }
