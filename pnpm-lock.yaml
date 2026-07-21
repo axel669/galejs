@@ -12,8 +12,8 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2
       '@axel669/windstorm':
-        specifier: 1.0.0-beta.1
-        version: 1.0.0-beta.1
+        specifier: 1.0.0-beta.3
+        version: 1.0.0-beta.3
       '@rollup/plugin-commonjs':
         specifier: ^29.0.3
         version: 29.0.3(rollup@4.62.2)
@@ -35,6 +35,9 @@ importers:
       preact-render-to-string:
         specifier: 6.7.0
         version: 6.7.0(preact@10.29.3)
+      preact-transitioning:
+        specifier: ^1.5.3
+        version: 1.5.3(preact@10.29.3)
       prettier:
         specifier: ^3.9.4
         version: 3.9.5
@@ -53,8 +56,8 @@ packages:
   '@axel669/rollup-html-input@0.1.2':
     resolution: {integrity: sha512-oecFl6axi6nZaIebi6vo0igA9FZnisxP4SZOEo4i24J9lQuaTyuMrPbcN7WFYzR9TGBOvuMpmCcti1ePmWu5Fg==}
 
-  '@axel669/windstorm@1.0.0-beta.1':
-    resolution: {integrity: sha512-1gFnUHd2FH6XzhKR9B3VAgEvNCmgUfcse7mFx9YG0ad+t47zY8H3TNnO4iA6imrwzOdbq0jeIGQ7G4Nrb5XGXQ==}
+  '@axel669/windstorm@1.0.0-beta.3':
+    resolution: {integrity: sha512-WJZAjAICz/XOhNcPSVmsUWvSmLghcszzu0V7R5fgdfAPXuk/9Qq1aULT+IP8pFWWYNawgErT6dq5m1i49gBFsg==}
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -485,6 +488,11 @@ packages:
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
+  preact-transitioning@1.5.3:
+    resolution: {integrity: sha512-UkOTvZJ5jRcuCpSFv2sUOjjO1UQdKMSQN9U3pPfz8RFDo32CCHTcjcsiJWFzmDoYsMxQz7iuIrrVTio+U9W57A==}
+    peerDependencies:
+      preact: '>=10.0.0'
+
   preact@10.29.3:
     resolution: {integrity: sha512-D9NL1GAnJZhc3RndVs4gDdxEeU9TcHgywMrhhOsnpdlvFjdbx0gAsLUnH6JEhlJH5giL7Tx5biWPUSEXE/HPzw==}
 
@@ -565,7 +573,7 @@ snapshots:
     dependencies:
       node-html-parser: 5.4.2
 
-  '@axel669/windstorm@1.0.0-beta.1': {}
+  '@axel669/windstorm@1.0.0-beta.3': {}
 
   '@emnapi/core@1.11.1':
     dependencies:
@@ -899,6 +907,10 @@ snapshots:
   picomatch@4.0.5: {}
 
   preact-render-to-string@6.7.0(preact@10.29.3):
+    dependencies:
+      preact: 10.29.3
+
+  preact-transitioning@1.5.3(preact@10.29.3):
     dependencies:
       preact: 10.29.3
 

@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "rollup -c lib/rollup.config.js",
     "build.test": "rollup -c test/rollup.config.js"
   },
   "keywords": [],
@@ -13,7 +14,7 @@
   "type": "module",
   "dependencies": {
     "@axel669/rollup-html-input": "^0.1.2",
-    "@axel669/windstorm": "1.0.0-beta.1",
+    "@axel669/windstorm": "1.0.0-beta.3",
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.0",
@@ -21,12 +22,20 @@
     "peggy": "^5.1.0",
     "preact": "10.29.3",
     "preact-render-to-string": "6.7.0",
+    "preact-transitioning": "^1.5.3",
     "prettier": "^3.9.4",
     "rolldown": "1.1.5",
     "rollup": "^4.62.2",
     "valtio": "2.3.2"
   },
+  "imports": {
+    "#core": "./lib/main.js",
+    "#state/*": "./test/state/*.js"
+  },
   "exports": {
-    ".": "./lib/styled.js"
+    ".": "./dist/gale.min.js",
+    "./dev": "./dist/gale.js",
+    "./unstyled": "./dist/gale-unstyled.min.js",
+    "./unstyled-dev": "./dist/gale-unstyled.js"
   }
 }
