@@ -35,9 +35,9 @@ Regex
 	= $("/" ("\\/" / [^\/\n\r])+ "/" [a-z]*)
 TagName = $([\$a-zA-Z0-9_\.\[\]"'`\(\),\-]+)
 Tag
-    = "<#frag" props:Props _ ">" children:Children* "</>" {
+    = "<#frag" props:Props _ ">" children:(If / Each / Children)* "</>" {
         return {
-            tag: "preact.Fragment",
+            tag: "$galeCore.Fragment",
             props,
             children: children.filter(child => child !== null),
         }
@@ -88,7 +88,7 @@ If
         }
     }
 Each
-    = "{#each" __ each:$((!"->" .)+) _ "->" __ expand:JS _ "}" content:Children* "{#/}" {
+    = "{#each" __ each:$((!"->" .)+) _ "->" __ expand:JS _ "}" content:(If / Children)* "{#/}" {
     	return {
         	each: each.trim(),
             expand: expand.trim(),

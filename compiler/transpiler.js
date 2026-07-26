@@ -2,6 +2,53 @@ import fs from "fs-jetpack"
 import * as parser from "./parser.js"
 import * as prettier from "prettier"
 
+const stringifyContent = (content, props) => content.reduce(
+    (list, child) => {
+        if (child === null) {
+            return list
+        }
+        if (typeof child === "string") {
+            if (child.trim() === "") {
+                return list
+            }
+            return [...list, JSON.stringify(child)]
+        }
+        if (child.slot !== undefined) {
+            const content = stringifyPart({
+                tag: "$galeCore.Fragment",
+                props: [],
+                children: child.content,
+            })
+            props.push([
+                child.slot,
+                `(${child.propName ?? ""}) => ${content}`
+            ])
+            return list
+        }
+        if (child.condition !== undefined) {
+            const content = child.content.map(
+                child => stringifyPart(child)
+            ).join(", ")
+            const alt = child.alt.map(
+                child => stringifyPart(child)
+            ).join(", ")
+            return [
+                ...list,
+                `(${child.condition}) ? [${content}] : [${alt}]`
+            ]
+        }
+        if (child.each !== undefined) {
+            const content = stringifyContent(child.content).join(", ")
+            return [
+                ...list,
+                `(${child.each}).map((${child.expand}) => [${content}])`
+            ]
+        }
+        return [...list, stringifyPart(child)]
+    },
+    []
+)
+
 const stringifyPart = (part) => {
     if (typeof part === "string") {
         return part
@@ -17,59 +64,7 @@ const stringifyPart = (part) => {
     }
 
     const props = [ ...part.props ]
-    const children = part.children.reduce(
-        (list, child) => {
-            if (child ===  null) {
-                return list
-            }
-            if (typeof child === "string") {
-                if (child.trim() === "") {
-                    return list
-                }
-                return [ ...list, JSON.stringify(child) ]
-            }
-            if (child.slot !== undefined) {
-                const content = stringifyPart({
-                    tag: "$galeCore.Fragment",
-                    props: [],
-                    children: child.content,
-                })
-                props.push([
-                    child.slot,
-                    `(${child.propName ?? ""}) => ${content}`
-                ])
-                return list
-            }
-            if (child.condition !== undefined) {
-                const content = child.content.map(
-                    child => stringifyPart(child)
-                ).join(", ")
-                const alt = child.alt.map(
-                    child => stringifyPart(child)
-                ).join(", ")
-                return [
-                    ...list,
-                    `(${child.condition}) ? [${content}] : [${alt}]`
-                ]
-            }
-            if (child.each !== undefined) {
-                const content =
-                    (child.content.length === 1)
-                    ? stringifyPart(child.content[0])
-                    : stringifyPart({
-                        tag: "$galeCore.Fragment",
-                        props: [],
-                        children: child.content,
-                    })
-                return [
-                    ...list,
-                    `(${child.each}).map((${child.expand}) => ${content})`
-                ]
-            }
-            return [ ...list, stringifyPart(child) ]
-        },
-        []
-    )
+    const children = stringifyContent(part.children, props)
     const isHTMLElement = (/^[a-z\-_]+$/.test(part.tag) === true)
     const propsCode = props.map(
         (pair) => {

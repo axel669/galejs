@@ -295,7 +295,7 @@ function peg$parse(input, options) {
   function peg$f4() {    return null  }
   function peg$f5(props, children) {
     return {
-        tag: "preact.Fragment",
+        tag: "$galeCore.Fragment",
         props,
         children: children.filter(child => child !== null),
     }
@@ -1370,10 +1370,22 @@ function peg$parse(input, options) {
       }
       if (s4 !== peg$FAILED) {
         s5 = [];
-        s6 = peg$parseChildren();
+        s6 = peg$parseIf();
+        if (s6 === peg$FAILED) {
+          s6 = peg$parseEach();
+          if (s6 === peg$FAILED) {
+            s6 = peg$parseChildren();
+          }
+        }
         while (s6 !== peg$FAILED) {
           s5.push(s6);
-          s6 = peg$parseChildren();
+          s6 = peg$parseIf();
+          if (s6 === peg$FAILED) {
+            s6 = peg$parseEach();
+            if (s6 === peg$FAILED) {
+              s6 = peg$parseChildren();
+            }
+          }
         }
         if (input.substr(peg$currPos, 3) === peg$c15) {
           s6 = peg$c15;
@@ -2075,10 +2087,16 @@ function peg$parse(input, options) {
               }
               if (s9 !== peg$FAILED) {
                 s10 = [];
-                s11 = peg$parseChildren();
+                s11 = peg$parseIf();
+                if (s11 === peg$FAILED) {
+                  s11 = peg$parseChildren();
+                }
                 while (s11 !== peg$FAILED) {
                   s10.push(s11);
-                  s11 = peg$parseChildren();
+                  s11 = peg$parseIf();
+                  if (s11 === peg$FAILED) {
+                    s11 = peg$parseChildren();
+                  }
                 }
                 if (input.substr(peg$currPos, 4) === peg$c26) {
                   s11 = peg$c26;
