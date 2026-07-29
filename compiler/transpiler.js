@@ -39,9 +39,17 @@ const stringifyContent = (content, props) => content.reduce(
         }
         if (child.each !== undefined) {
             const content = stringifyContent(child.content).join(", ")
+            const each = `(${child.each})?.map((${child.expand}) => [${content}]) ?? []`
+            if (child.alt.length === 0) {
+                return [
+                    ...list,
+                    each
+                ]
+            }
+            const alt = stringifyContent(child.alt)
             return [
                 ...list,
-                `(${child.each}).map((${child.expand}) => [${content}])`
+                `$galeCore.__eachAlt(${each}, () => [${alt}])`
             ]
         }
         return [...list, stringifyPart(child)]
@@ -49,6 +57,15 @@ const stringifyContent = (content, props) => content.reduce(
     []
 )
 
+const tagstr = (isHTML, tag) => {
+    if (isHTML === true) {
+        return `"${tag}"`
+    }
+    if (tag.startsWith("$:") === true) {
+        return tag.slice(2)
+    }
+    return tag
+}
 const stringifyPart = (part) => {
     if (typeof part === "string") {
         return part
@@ -83,7 +100,8 @@ const stringifyPart = (part) => {
             return `"${prop}": ${value}`
         }
     ).join(", ")
-    const tag = (isHTMLElement === true) ? `"${part.tag}"` : part.tag
+    // const tag = (isHTMLElement === true) ? `"${part.tag}"` : part.tag
+    const tag = tagstr(isHTMLElement, part.tag)
     if (children.length === 0) {
         return `$galeCore.Element(${tag}, {${propsCode}})`
     }

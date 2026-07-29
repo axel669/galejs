@@ -32,8 +32,8 @@ String
     / $("'" ([^\\'] / "\\" .)* "'")
     / $("`" ([^\\`] / "\\" .)* "`")
 Regex
-	= $("/" ("\\/" / [^\/\n\r])+ "/" [a-z]*)
-TagName = $([\$a-zA-Z0-9_\.\[\]"'`\(\),\-]+)
+    = $("/" ("\\/" / [^\/\n\r])+ "/" [a-z]*)
+TagName = $([\$a-zA-Z0-9_\.\[\]"'`\(\),\-:]+)
 Tag
     = "<#frag" props:Props _ ">" children:(If / Each / Children)* "</>" {
         return {
@@ -88,11 +88,12 @@ If
         }
     }
 Each
-    = "{#each" __ each:$((!"->" .)+) _ "->" __ expand:JS _ "}" content:(If / Children)* "{#/}" {
-    	return {
-        	each: each.trim(),
+    = "{#each" __ each:$((!"->" .)+) _ "->" __ expand:JS _ "}" content:(If / Children)* els:("{#else}" Children*)? "{#/}" {
+        return {
+            each: each.trim(),
             expand: expand.trim(),
             content: content.filter(item => item !== null),
+            alt: (els?.[1] ?? []).filter(item => item !== null),
         }
     }
 
