@@ -29,7 +29,8 @@
     "valtio": "2.3.2"
   },
   "imports": {
-    "#core": "./lib/main.js",
+    "#core": "./lib/core.js",
+    "#styled": "./lib/styled.js",
     "#state/*": "./test/state/*.js"
   },
   "exports": {
