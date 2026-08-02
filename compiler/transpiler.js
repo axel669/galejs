@@ -14,14 +14,10 @@ const stringifyContent = (content, props) => content.reduce(
             return [...list, JSON.stringify(child)]
         }
         if (child.slot !== undefined) {
-            const content = stringifyPart({
-                tag: "$galeCore.Fragment",
-                props: [],
-                children: child.content,
-            })
+            const content = stringifyContent(child.content).join(", ")
             props.push([
                 child.slot,
-                `(${child.propName ?? ""}) => ${content}`
+                `(${child.propName ?? ""}) => [${content}]`
             ])
             return list
         }
@@ -61,9 +57,6 @@ const tagstr = (isHTML, tag) => {
     if (isHTML === true) {
         return `"${tag}"`
     }
-    if (tag.startsWith("$:") === true) {
-        return tag.slice(2)
-    }
     return tag
 }
 const stringifyPart = (part) => {
@@ -100,8 +93,10 @@ const stringifyPart = (part) => {
             return `"${prop}": ${value}`
         }
     ).join(", ")
-    // const tag = (isHTMLElement === true) ? `"${part.tag}"` : part.tag
     const tag = tagstr(isHTMLElement, part.tag)
+    if (part.tag.startsWith("$:") === true) {
+        return `$galeCore.Element($galeCore.Slot, { "*render": ${tag.slice(2)}, ${propsCode} })`
+    }
     if (children.length === 0) {
         return `$galeCore.Element(${tag}, {${propsCode}})`
     }
