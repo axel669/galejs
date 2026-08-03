@@ -87,6 +87,10 @@ const stringifyPart = (part) => {
                 const val = value.slice(1)
                 return `"${prop}": { value: ${val}, update: (e) => ${val} = $galeCore.getInputValue(e.target) }`
             }
+            if (value.startsWith("&") === true) {
+                const val = value.slice(1)
+                return `"${prop}": $galeCore.lock((node) => ${val} = $galeCore.ref(node))`
+            }
             if (prop.startsWith("on:") === true) {
                 return `"${prop.replace(":", "")}": ${value}`
             }
