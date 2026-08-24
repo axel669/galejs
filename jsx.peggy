@@ -45,7 +45,7 @@ Tag
     / "<" tag:TagName props:Props _ "/>" {
         return { tag, props, children: [] }
     }
-    / "<" tag:TagName props:Props _ ">" children:(Slot / If / Each / Children)* close:TagClose {
+    / "<" tag:TagName props:Props _ ">" children:(If / Each / Children)* close:TagClose {
         return {
             tag,
             props,
@@ -69,14 +69,14 @@ Children
     / "{/*" ([^\*] / "*" [^/])* "*/}" { return null }
     / js:JSValue { return { js } }
     / "\\{"
-Slot
-    = "{#slot" __ slot:VarName propName:(":" VarName)? _ "}" content:(Children / If)* "{#/}" {
-        return {
-            slot,
-            propName: propName?.[1] ?? null,
-            content: content.filter(item => item !== null)
-        }
-    }
+// Slot
+//     = "{#slot" __ slot:VarName propName:(":" VarName)? _ "}" content:(Children / If)* "{#/}" {
+//         return {
+//             slot,
+//             propName: propName?.[1] ?? null,
+//             content: content.filter(item => item !== null)
+//         }
+//     }
 VarName
     = $([a-zA-Z_$] [a-zA-Z_$0-9]*)
 If
@@ -103,6 +103,7 @@ Props
     }
 PropItem
     = "{" name:PropName "}" { return [name, name] }
+    / start:$([$a-zA-Z_] [$a-zA-Z_0-9\-]*) ":" "{" name:PropName "}" { return [`${start}:${name}`, name]}
     / name:PropName "=" "{" value:JS "}" { return [name, value] }
     / name:PropName "=" '"' str:PropString* '"' {
         return [name, `"${str.join("")}"`]

@@ -13,14 +13,14 @@ const stringifyContent = (content, props) => content.reduce(
             }
             return [...list, JSON.stringify(child)]
         }
-        if (child.slot !== undefined) {
-            const content = stringifyContent(child.content).join(", ")
-            props.push([
-                child.slot,
-                `(${child.propName ?? ""}) => [${content}]`
-            ])
-            return list
-        }
+        // if (child.slot !== undefined) {
+        //     const content = stringifyContent(child.content).join(", ")
+        //     props.push([
+        //         child.slot,
+        //         `(${child.propName ?? ""}) => [${content}]`
+        //     ])
+        //     return list
+        // }
         if (child.condition !== undefined) {
             const content = child.content.map(
                 child => stringifyPart(child)
